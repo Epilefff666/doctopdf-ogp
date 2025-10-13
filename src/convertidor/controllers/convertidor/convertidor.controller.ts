@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Controller,
   Post,
+  StreamableFile,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common';
@@ -27,10 +28,15 @@ export class ConvertidorController {
       }),
     }),
   )
-  convertir(@UploadedFile() file: Express.Multer.File): any {
+  async convertir(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<StreamableFile> {
     if (!file) {
       throw new BadRequestException('No file provided');
     }
-    return this.convertidorService.docToPdf(file);
+
+    const pdf = await this.convertidorService.docToPdf(file);
+
+    return pdf;
   }
 }
