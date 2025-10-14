@@ -9,23 +9,10 @@ export class ConvertidorService {
     const document = fs.readFileSync(file.path);
 
     const Buffer = await new Promise<Buffer>((resolve, reject) => {
-      libre.convertWithOptions(
-        document,
-        'pdf',
-        undefined,
-        {
-          fileName: path.parse(file.originalname).name,
-          tmpOptions: {
-            tmpdir: './uploads/tmpfiles',
-            prefix: 'myconvert_',
-            unsafeCleanup: true,
-          },
-        },
-        (err, done) => {
-          if (err) reject(err);
-          else resolve(done);
-        },
-      );
+      libre.convert(document, 'pdf', undefined, (err, done) => {
+        if (err) reject(err);
+        else resolve(done);
+      });
     });
 
     return new StreamableFile(Buffer, {
