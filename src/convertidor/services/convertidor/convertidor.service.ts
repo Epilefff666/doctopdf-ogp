@@ -14,7 +14,10 @@ export class ConvertidorService {
         else resolve(done);
       });
     });
-
+    fs.unlink(file.path, (err) => {
+      if (err) console.log(err);
+    });
+    console.log('docx convertido a pdf');
     return new StreamableFile(Buffer, {
       type: 'application/pdf',
       disposition: `attachment; filename="${path.parse(file.originalname).name}.pdf"`,

@@ -28,7 +28,7 @@ export class ConvertidorController {
       }),
     }),
   )
-  async convertir(
+  async docToPdf(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<StreamableFile> {
     if (!file) {
