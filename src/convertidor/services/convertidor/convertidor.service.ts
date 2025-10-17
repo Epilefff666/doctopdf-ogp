@@ -1,11 +1,10 @@
-import { Injectable, StreamableFile } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as libre from 'libreoffice-convert';
-import * as path from 'path';
 import * as fs from 'fs';
 
 @Injectable()
 export class ConvertidorService {
-  async docToPdf(file: Express.Multer.File): Promise<StreamableFile> {
+  async docToPdf(file: Express.Multer.File): Promise<Buffer> {
     const document = fs.readFileSync(file.path);
 
     const Buffer = await new Promise<Buffer>((resolve, reject) => {
@@ -17,10 +16,6 @@ export class ConvertidorService {
     fs.unlink(file.path, (err) => {
       if (err) console.log(err);
     });
-    console.log('docx convertido a pdf');
-    return new StreamableFile(Buffer, {
-      type: 'application/pdf',
-      disposition: `attachment; filename="${path.parse(file.originalname).name}.pdf"`,
-    });
+    return Buffer;
   }
 }

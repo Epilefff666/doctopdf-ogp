@@ -20,23 +20,37 @@ export class ConvertidorController {
     FileInterceptor('file', {
       storage: diskStorage({
         destination: './uploads',
-        filename: (req, file, cb) => {
+        filename: (_req, file, cb) => {
           const fileExt = path.extname(file.originalname); // .docx
           const fileName = `${Date.now()}${fileExt}`;
           cb(null, fileName);
         },
       }),
+      fileFilter: (_req, file, err) => {
+        if (path.extname(file.originalname).toLocaleLowerCase() !== '.docx') {
+          return err(
+            new BadRequestException('El archivo ingresado debe ser .docx'),
+            false,
+          );
+        }
+        err(null, true);
+      },
     }),
   )
   async docToPdf(
     @UploadedFile() file: Express.Multer.File,
   ): Promise<StreamableFile> {
     if (!file) {
-      throw new BadRequestException('No file provided');
+      throw new BadRequestException('Archivo no enviado');
     }
-
-    const pdf = await this.convertidorService.docToPdf(file);
-
-    return pdf;
+    try {
+      const pdf = await this.convertidorService.docToPdf(file);
+      return new StreamableFile(pdf, {
+        type: 'application/pdf',
+        disposition: `attachment; filename="${file.originalname}.pdf"`,
+      });
+    } catch (error) {
+      throw new BadRequestException(`Error al convertir el archivo - ${error}`);
+    }
   }
 }
