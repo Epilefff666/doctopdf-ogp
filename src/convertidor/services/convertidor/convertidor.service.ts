@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as libre from 'libreoffice-convert';
 import * as fs from 'fs';
+import { Readable } from 'stream';
 
 @Injectable()
 export class ConvertidorService {
@@ -17,5 +18,12 @@ export class ConvertidorService {
       if (err) console.log(err);
     });
     return Buffer;
+  }
+
+  bufferToStream(buffer: Buffer): Readable {
+    const stream = new Readable();
+    stream.push(buffer);
+    stream.push(null);
+    return stream;
   }
 }
