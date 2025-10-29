@@ -57,6 +57,22 @@ ENV NODE_ENV production
 # Instalar LibreOffice y dependencias en Alpine
 RUN apk add --no-cache libreoffice libreoffice-common ttf-dejavu bash
 
+# Instalar dependencias para fuentes (fontconfig para manejar la caché de fuentes)
+#RUN apk add --no-cache fontconfig \
+#    font-noto \
+#    font-bitstream-vera \
+#    ttf-liberation
+
+#Instalar fuentes comunes de código abierto que se usan como sustitutos
+# Esto mejora el soporte Unicode.
+RUN apk add --no-cache ttf-freefont ttf-inconsolata
+
+# Copiar las fuentes desde el host al contenedor
+COPY ms-fonts /usr/share/fonts/msttcore/
+
+# Este comando es CRUCIAL para que LibreOffice/fontconfig reconozca las fuentes copiadas.
+RUN fc-cache -f -v
+
 # Crear carpeta uploads y dar permisos
 RUN mkdir -p /usr/src/app/uploads && chown -R node:node /usr/src/app/uploads
 
